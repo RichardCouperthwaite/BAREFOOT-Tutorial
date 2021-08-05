@@ -24,6 +24,7 @@ from gpModel import gp_model, bmarsModel
 from sklearn_extra.cluster import KMedoids
 import logging
 from pyDOE import lhs
+import matplotlib.pyplot as plt
 
 import concurrent.futures
 def Pool():
@@ -301,6 +302,17 @@ class barefoot():
         self.logger.debug("Output Dataframes Created")
     
     def __save_output_dataframes(self):
+        fig,ax = plt.subplots(1,2,figsize=(10,5))
+        ax[0].set_xlabel('RVE Evaluations')
+        ax[0].set_ylabel('$1/\sigma(d\sigma/d\epsilon_{pl})$')
+        ax[0].set_xlim(0,20)
+        ax[0].set_xticks([0,2,4,6,8,10,12,14,16,18,20])
+        ax[0].set_ylim(0,35)
+        ax[1].set_xlabel('Iteration')
+        ax[1].set_ylabel('Model Evaluations')
+        ax[1].set_xlim(0,20)
+        ax[1].set_ylim(0,100)
+        
         def pltsin(ax, fig, x, y, lbls):
             if ax.lines:
                 ii = 0
@@ -314,9 +326,6 @@ class barefoot():
                 ax.plot(x[2], y[2], 'b-.', label=lbls[2])
                 ax.legend()
             fig.canvas.draw()
-
-        ax = self.temp_input[1]
-        fig = self.temp_input[0]
         
         with open("reificationOnlyResults.pickle", 'rb') as f:
             reifi_out = load(f)
@@ -338,6 +347,8 @@ class barefoot():
         pltsin(ax[1], fig, [iteration, iteration, iteration], 
                       [isostrain_calls, isostress_calls, isowork_calls], 
                       ["Isostrain", "Isostress", "Isowork"])
+        
+        plt.show()
         
         # The dataframes are saved in two forms, first a pickled version of the
         # dataframe, and also a csv version for readability
